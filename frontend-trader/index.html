@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-white min-h-screen text-neutral-800 flex flex-col">
+
+    <header class="bg-stone-300 border-b border-stone-400 px-4 py-2 flex space-x-2">
+        <button
+            onclick="switchTab('home')"
+            id="nav-home"
+            class="px-3 py-1 bg-stone-400 text-stone-900 font-medium text-sm rounded"
+        >
+            Home
+        </button>
+
+        <button
+            onclick="switchTab('ai')"
+            id="nav-ai"
+            class="px-3 py-1 bg-stone-300 text-stone-700 font-medium text-sm rounded"
+        >
+            AI
+        </button>
+
+        <button
+            onclick="switchTab('accounts')"
+            id="nav-accounts"
+            class="px-3 py-1 bg-stone-300 text-stone-700 font-medium text-sm rounded"
+        >
+            Accounts
+        </button>
+    </header>
+
+    <main class="flex-1 p-6 max-w-6xl mx-auto w-full">
+
+        <!-- HOME -->
+        <section id="view-home">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-light">
+                    Trade Analyzer
+                </h1>
+
+                <button
+                    onclick="fetchStockData()"
+                    class="bg-stone-200 px-3 py-2 rounded border border-stone-300"
+                >
+                    Refresh Quotes
+                </button>
+            </div>
+
+            <div
+                id="home-stocks-grid"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+            ></div>
+        </section>
+
+        <!-- AI -->
+        <section
+            id="view-ai"
+            class="hidden space-y-6"
+        >
+            <h1 class="text-2xl font-light">
+                Ready to chat?
+            </h1>
+
+            <textarea
+                id="chat-input"
+                class="w-full h-32 border border-stone-300 rounded p-3 bg-stone-100"
+                placeholder="Ask AI about stocks..."
+            ></textarea>
+
+            <button
+                onclick="sendChat()"
+                class="bg-stone-400 hover:bg-stone-500 px-4 py-2 rounded"
+            >
+                Send
+            </button>
+
+            <div
+                id="chat-response"
+                class="bg-stone-200 p-4 rounded min-h-[120px] border border-stone-300"
+            >
+                AI response appears here...
+            </div>
+
+            <div
+                id="ai-stocks-grid"
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3"
+            ></div>
+        </section>
+
+        <!-- ACCOUNTS -->
+        <section
+            id="view-accounts"
+            class="hidden space-y-4"
+        >
+            <h1 class="text-2xl font-light">
+                Accounts
+            </h1>
+
+            <button
+                onclick="switchTab('account1')"
+                class="w-full bg-stone-300 p-4 rounded text-left"
+            >
+                Account 1
+            </button>
+
+            <button
+                onclick="switchTab('account2')"
+                class="w-full bg-stone-300 p-4 rounded text-left"
+            >
+                Account 2
+            </button>
+
+            <button
+                onclick="switchTab('account3')"
+                class="w-full bg-stone-300 p-4 rounded text-left"
+            >
+                Account 3
+            </button>
+        </section>
+
+        <!-- ACCOUNT 1 -->
+        <section
+            id="view-account1"
+            class="hidden space-y-6"
+        >
+            <div class="flex justify-between">
+                <h1 class="text-2xl font-light">
+                    Account 1
+                </h1>
+
+                <button
+                    onclick="switchTab('add-stocks')"
+                    class="bg-stone-300 px-4 py-2 rounded"
+                >
+                    Add
+                </button>
+            </div>
+
+            <div class="bg-stone-300 p-4 rounded">
+                Account 1 AI Summary
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+
+                <div class="bg-stone-200 p-4 rounded h-48 overflow-auto">
+                    <h3 class="font-bold">
+                        Holdings
+                    </h3>
+
+                    <div id="account1-holdings">
+                        AAPL<br>
+                        MSFT
+                    </div>
+                </div>
+
+                <div class="bg-stone-200 p-4 rounded h-48 overflow-auto">
+                    <h3 class="font-bold">
+                        Balance
+                    </h3>
+
+                    Balance chart area
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ACCOUNT 2 -->
+        <section
+            id="view-account2"
+            class="hidden"
+        >
+            <h1 class="text-2xl font-light">
+                Account 2
+            </h1>
+        </section>
+
+        <!-- ACCOUNT 3 -->
+        <section
+            id="view-account3"
+            class="hidden"
+        >
+            <h1 class="text-2xl font-light">
+                Account 3
+            </h1>
+        </section>
+
+        <!-- ADD STOCKS -->
+        <section
+            id="view-add-stocks"
+            class="hidden"
+        >
+            <h1 class="text-2xl font-light mb-4">
+                Add Stocks
+            </h1>
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <div
+                    class="bg-stone-200 p-6 rounded h-64 overflow-auto"
+                >
+                    <ul class="space-y-2">
+
+                        <li
+                            onclick="addStock('AAPL')"
+                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
+                        >
+                            + AAPL
+                        </li>
+
+                        <li
+                            onclick="addStock('MSFT')"
+                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
+                        >
+                            + MSFT
+                        </li>
+
+                        <li
+                            onclick="addStock('GOOGL')"
+                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
+                        >
+                            + GOOGL
+                        </li>
+
+                        <li
+                            onclick="addStock('AMZN')"
+                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
+                        >
+                            + AMZN
+                        </li>
+
+                        <li
+                            onclick="addStock('TSLA')"
+                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
+                        >
+                            + TSLA
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div
+                    class="border-2 border-dashed border-stone-300 rounded flex justify-center items-center"
+                >
+                    Fake money only.
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // https page -> same-origin /api (reverse proxy); plain http -> port 8000
+        const API_URL = window.API_URL ||
+            (location.hostname === "kiwistastegood.uk"
+                ? "https://api.kiwistastegood.uk"
+            : location.protocol === "https:"
+                ? `${location.origin}/api`
+                : location.hostname
+                    ? `http://${location.hostname}:8000`
+                    : "http://10.0.0.135:8000");
+
+        const symbols = [
+            "AAPL",
+            "MSFT",
+            "GOOGL",
+            "AMZN",
+            "TSLA",
+            "META",
+            "NVDA",
+            "NFLX",
+            "AMD",
+            "INTC",
+            "DIS",
+            "PYPL"
+        ];
+
+        async function readJson(response) {
+            const text = await response.text();
+
+            try {
+                return JSON.parse(text);
+            } catch {
+                throw new Error(
+                    `Backend returned HTML instead of JSON (HTTP ${response.status}). ` +
+                    `${API_URL} is not reaching the API - check the tunnel route.`
+                );
+            }
+        }
+
+        function switchTab(tabId) {
+            const views = [
+                "home",
+                "ai",
+                "accounts",
+                "account1",
+                "account2",
+                "account3",
+                "add-stocks"
+            ];
+
+            views.forEach(view => {
+                document
+                    .getElementById(`view-${view}`)
+                    ?.classList.add("hidden");
+            });
+
+            document
+                .getElementById(`view-${tabId}`)
+                ?.classList.remove("hidden");
+        }
+
+        async function fetchStockData() {
+            const grid = document.getElementById("home-stocks-grid");
+
+            try {
+                const response = await fetch(
+                    `${API_URL}/quotes?symbols=${symbols.join(",")}`
+                );
+
+                const data = await readJson(response);
+
+                if (!response.ok) {
+                    throw new Error(data.detail || `HTTP ${response.status}`);
+                }
+
+                renderHome(data);
+                renderAi(data);
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = `<p>Unable to load quotes: ${err.message}</p>`;
+            }
+        }
+
+        function renderHome(data) {
+            const grid = document.getElementById("home-stocks-grid");
+
+            grid.innerHTML = "";
+
+            symbols.slice(0, 6).forEach(symbol => {
+                const info = data[symbol] || {};
+                const hasData = info.price != null;
+                const pct = Number(info.percent || 0);
+
+                const color = pct >= 0
+                    ? "text-green-700"
+                    : "text-red-700";
+
+                grid.innerHTML += `
+                    <div class="bg-stone-200 border border-stone-300 p-4 rounded h-40">
+                        <div class="text-xs uppercase text-stone-500">
+                            Live Quote
+                        </div>
+
+                        <div class="text-xl font-bold mt-2">
+                            ${symbol}
+                        </div>
+
+                        <div class="mt-4">
+                            ${hasData ? "$" + Number(info.price).toFixed(2) : "—"}
+                        </div>
+
+                        <div class="${color}">
+                            ${hasData ? pct.toFixed(2) + "%" : "—"}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderAi(data) {
+            const grid = document.getElementById("ai-stocks-grid");
+
+            grid.innerHTML = "";
+
+            symbols.forEach(symbol => {
+                const info = data[symbol] || {};
+                const hasData = info.price != null;
+                const pct = Number(info.percent || 0);
+
+                const color = pct >= 0
+                    ? "text-green-700"
+                    : "text-red-700";
+
+                grid.innerHTML += `
+                    <div class="bg-stone-200 border border-stone-300 p-3 rounded">
+                        <div class="flex justify-between">
+                            <span>${symbol}</span>
+
+                            <span class="${color}">
+                                ${hasData ? pct.toFixed(2) + "%" : "—"}
+                            </span>
+                        </div>
+
+                        <div class="text-xs">
+                            ${hasData ? "$" + Number(info.price).toFixed(2) : "—"}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function sendChat() {
+            const question = document
+                .getElementById("chat-input")
+                .value;
+
+            if (!question.trim()) {
+                return;
+            }
+
+            const output = document.getElementById("chat-response");
+
+            output.innerText = "Thinking...";
+
+            try {
+                const response = await fetch(
+                    `${API_URL}/chat?q=${encodeURIComponent(question)}`
+                );
+
+                const data = await readJson(response);
+
+                if (!response.ok) {
+                    throw new Error(data.detail || `HTTP ${response.status}`);
+                }
+
+                output.innerText = data.answer;
+            } catch (err) {
+                output.innerText = `AI error: ${err.message}`;
+                console.error(err);
+            }
+        }
+
+        function addStock(symbol) {
+            alert(`${symbol} added`);
+        }
+
+        window.onload = () => {
+            fetchStockData();
+
+            setInterval(
+                fetchStockData,
+                30000
+            );
+        };
+    </script>
+
+</body>
+
+</html>

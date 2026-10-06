@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+llama-index-core
+llama-index-embeddings-fastembed
+fastembed
+llama-index-llms-openai-like
+llama-index-vector-stores-chroma
+llama-index-readers-file
+chromadb
+pypdf
+python-multipart
+pandas
+python-dateutil
