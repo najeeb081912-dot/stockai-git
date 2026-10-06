@@ -14,6 +14,8 @@ import pandas as pd
 from dateutil import parser as date_parser
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import ledger
+from auth import router as auth_router
 from llama_index.core import (
     PromptTemplate,
     Settings,
@@ -87,6 +89,8 @@ QUOTE_TTL_SECONDS = 15
 
 
 app = FastAPI()
+
+app.include_router(auth_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -205,6 +209,13 @@ def quotes(symbols: str):
     ]
 
     return get_quotes(wanted)
+
+
+# Account endpoints (fake-money ledger) use the same live prices
+ledger.set_price_provider(
+    lambda symbols: {s: q["price"] for s, q in get_quotes(symbols).items()}
+)
+app.include_router(ledger.router)
 
 
 # ---------------------------------------------------------------------------

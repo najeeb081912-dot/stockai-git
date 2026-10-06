@@ -5,16 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trade Analyzer</title>
+    <meta name="theme-color" content="#3a453d">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { ink: "#3a453d", sand: "#c6c58a" } } }
+        };
+    </script>
 </head>
 
-<body class="bg-white min-h-screen text-neutral-800 flex flex-col">
+<body class="bg-ink min-h-screen text-sand flex flex-col">
 
-    <header class="bg-stone-300 border-b border-stone-400 px-4 py-2 flex space-x-2">
+    <header class="bg-black/20 border-b border-sand/30 px-4 py-2 flex space-x-2">
         <button
             onclick="switchTab('home')"
             id="nav-home"
-            class="px-3 py-1 bg-stone-400 text-stone-900 font-medium text-sm rounded"
+            class="px-3 py-1 bg-sand text-ink font-medium text-sm rounded hidden"
         >
             Home
         </button>
@@ -22,7 +28,7 @@
         <button
             onclick="switchTab('ai')"
             id="nav-ai"
-            class="px-3 py-1 bg-stone-300 text-stone-700 font-medium text-sm rounded"
+            class="px-3 py-1 bg-sand/10 text-sand font-medium text-sm rounded hidden"
         >
             AI
         </button>
@@ -30,24 +36,90 @@
         <button
             onclick="switchTab('accounts')"
             id="nav-accounts"
-            class="px-3 py-1 bg-stone-300 text-stone-700 font-medium text-sm rounded"
+            class="px-3 py-1 bg-sand/10 text-sand font-medium text-sm rounded hidden"
         >
             Accounts
         </button>
+
+        <div id="user-bar" class="ml-auto hidden flex items-center space-x-3 text-sm">
+            <span id="user-name" class="text-sand/70"></span>
+
+            <button
+                onclick="signOut()"
+                class="px-3 py-1 bg-sand/10 text-sand font-medium text-sm rounded"
+            >
+                Sign out
+            </button>
+        </div>
     </header>
 
     <main class="flex-1 p-6 max-w-6xl mx-auto w-full">
 
+        <!-- LOGIN -->
+        <section
+            id="view-login"
+            class="hidden max-w-sm mx-auto space-y-4 pt-10"
+        >
+            <h1 id="login-title" class="text-3xl font-light">
+                Sign in
+            </h1>
+
+            <input
+                id="login-username"
+                type="text"
+                autocomplete="username"
+                placeholder="Username"
+                class="w-full border border-sand/30 rounded p-3 bg-black/20 text-sand placeholder-sand/50"
+            >
+
+            <input
+                id="login-password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Password"
+                class="w-full border border-sand/30 rounded p-3 bg-black/20 text-sand placeholder-sand/50"
+            >
+
+            <input
+                id="login-code"
+                type="password"
+                placeholder="Sign-up code"
+                class="hidden w-full border border-sand/30 rounded p-3 bg-black/20 text-sand placeholder-sand/50"
+            >
+
+            <button
+                id="login-submit"
+                onclick="submitAuth()"
+                class="w-full bg-sand text-ink hover:bg-sand/80 px-4 py-2 rounded"
+            >
+                Sign in
+            </button>
+
+            <div id="login-error" class="text-red-400 text-sm min-h-[1.25rem]"></div>
+
+            <button
+                id="login-toggle"
+                onclick="toggleAuthMode()"
+                class="text-sm text-sand/70 underline"
+            >
+                Create an account
+            </button>
+
+            <p class="text-xs text-sand/50">
+                Fake money only.
+            </p>
+        </section>
+
         <!-- HOME -->
-        <section id="view-home">
+        <section id="view-home" class="hidden">
             <div class="flex justify-between items-center mb-6">
                 <h1 class="text-3xl font-light">
                     Trade Analyzer
                 </h1>
 
                 <button
-                    onclick="fetchStockData()"
-                    class="bg-stone-200 px-3 py-2 rounded border border-stone-300"
+                    onclick="refreshAll()"
+                    class="bg-sand/10 px-3 py-2 rounded border border-sand/30"
                 >
                     Refresh Quotes
                 </button>
@@ -70,20 +142,20 @@
 
             <textarea
                 id="chat-input"
-                class="w-full h-32 border border-stone-300 rounded p-3 bg-stone-100"
+                class="w-full h-32 border border-sand/30 rounded p-3 bg-black/20 text-sand placeholder-sand/50"
                 placeholder="Ask AI about stocks..."
             ></textarea>
 
             <button
                 onclick="sendChat()"
-                class="bg-stone-400 hover:bg-stone-500 px-4 py-2 rounded"
+                class="bg-sand text-ink hover:bg-sand/80 px-4 py-2 rounded"
             >
                 Send
             </button>
 
             <div
                 id="chat-response"
-                class="bg-stone-200 p-4 rounded min-h-[120px] border border-stone-300"
+                class="bg-sand/10 p-4 rounded min-h-[120px] border border-sand/30"
             >
                 AI response appears here...
             </div>
@@ -105,21 +177,21 @@
 
             <button
                 onclick="switchTab('account1')"
-                class="w-full bg-stone-300 p-4 rounded text-left"
+                class="w-full bg-sand/20 hover:bg-sand/30 p-4 rounded text-left"
             >
                 Account 1
             </button>
 
             <button
                 onclick="switchTab('account2')"
-                class="w-full bg-stone-300 p-4 rounded text-left"
+                class="w-full bg-sand/20 hover:bg-sand/30 p-4 rounded text-left"
             >
                 Account 2
             </button>
 
             <button
                 onclick="switchTab('account3')"
-                class="w-full bg-stone-300 p-4 rounded text-left"
+                class="w-full bg-sand/20 hover:bg-sand/30 p-4 rounded text-left"
             >
                 Account 3
             </button>
@@ -130,125 +202,328 @@
             id="view-account1"
             class="hidden space-y-6"
         >
-            <div class="flex justify-between">
-                <h1 class="text-2xl font-light">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <button
+                        onclick="switchTab('accounts')"
+                        class="bg-sand/20 px-4 py-2 rounded"
+                    >
+                        &larr; Back
+                    </button>
+
+                    <h1 class="text-2xl font-light">
                     Account 1
                 </h1>
+                </div>
 
                 <button
-                    onclick="switchTab('add-stocks')"
-                    class="bg-stone-300 px-4 py-2 rounded"
+                    onclick="openTrade(1)"
+                    class="bg-sand/20 px-4 py-2 rounded"
                 >
                     Add
                 </button>
             </div>
 
-            <div class="bg-stone-300 p-4 rounded">
+            <div class="bg-sand/20 p-4 rounded">
                 Account 1 AI Summary
             </div>
 
             <div class="grid md:grid-cols-2 gap-4">
 
-                <div class="bg-stone-200 p-4 rounded h-48 overflow-auto">
+                <div class="bg-sand/10 p-4 rounded h-48 overflow-auto">
                     <h3 class="font-bold">
                         Holdings
                     </h3>
 
                     <div id="account1-holdings">
-                        AAPL<br>
-                        MSFT
+                        Loading...
                     </div>
                 </div>
 
-                <div class="bg-stone-200 p-4 rounded h-48 overflow-auto">
+                <div class="bg-sand/10 p-4 rounded h-48 overflow-auto">
                     <h3 class="font-bold">
                         Balance
                     </h3>
 
-                    Balance chart area
+                    <div id="account1-balance" class="mt-2 space-y-1 text-sm">Loading...</div>
                 </div>
 
+            </div>
+
+            <div>
+                <h3 class="font-bold mb-3">
+                    Stocks
+                </h3>
+
+                <div
+                    id="account1-stocks"
+                    class="grid grid-cols-2 md:grid-cols-3 gap-4"
+                ></div>
             </div>
         </section>
 
         <!-- ACCOUNT 2 -->
         <section
             id="view-account2"
-            class="hidden"
+            class="hidden space-y-6"
         >
-            <h1 class="text-2xl font-light">
-                Account 2
-            </h1>
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <button
+                        onclick="switchTab('accounts')"
+                        class="bg-sand/20 px-4 py-2 rounded"
+                    >
+                        &larr; Back
+                    </button>
+
+                    <h1 class="text-2xl font-light">
+                    Account 2
+                </h1>
+                </div>
+
+                <button
+                    onclick="openTrade(2)"
+                    class="bg-sand/20 px-4 py-2 rounded"
+                >
+                    Add
+                </button>
+            </div>
+
+            <div class="bg-sand/20 p-4 rounded">
+                Account 2 AI Summary
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+
+                <div class="bg-sand/10 p-4 rounded h-48 overflow-auto">
+                    <h3 class="font-bold">
+                        Holdings
+                    </h3>
+
+                    <div id="account2-holdings">
+                        Loading...
+                    </div>
+                </div>
+
+                <div class="bg-sand/10 p-4 rounded h-48 overflow-auto">
+                    <h3 class="font-bold">
+                        Balance
+                    </h3>
+
+                    <div id="account2-balance" class="mt-2 space-y-1 text-sm">Loading...</div>
+                </div>
+
+            </div>
+
+            <div>
+                <h3 class="font-bold mb-3">
+                    Stocks
+                </h3>
+
+                <div
+                    id="account2-stocks"
+                    class="grid grid-cols-2 md:grid-cols-3 gap-4"
+                ></div>
+            </div>
         </section>
 
         <!-- ACCOUNT 3 -->
         <section
             id="view-account3"
-            class="hidden"
+            class="hidden space-y-6"
         >
-            <h1 class="text-2xl font-light">
-                Account 3
-            </h1>
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <button
+                        onclick="switchTab('accounts')"
+                        class="bg-sand/20 px-4 py-2 rounded"
+                    >
+                        &larr; Back
+                    </button>
+
+                    <h1 class="text-2xl font-light">
+                    Account 3
+                </h1>
+                </div>
+
+                <button
+                    onclick="openTrade(3)"
+                    class="bg-sand/20 px-4 py-2 rounded"
+                >
+                    Add
+                </button>
+            </div>
+
+            <div class="bg-sand/20 p-4 rounded">
+                Account 3 AI Summary
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+
+                <div class="bg-sand/10 p-4 rounded h-48 overflow-auto">
+                    <h3 class="font-bold">
+                        Holdings
+                    </h3>
+
+                    <div id="account3-holdings">
+                        Loading...
+                    </div>
+                </div>
+
+                <div class="bg-sand/10 p-4 rounded h-48 overflow-auto">
+                    <h3 class="font-bold">
+                        Balance
+                    </h3>
+
+                    <div id="account3-balance" class="mt-2 space-y-1 text-sm">Loading...</div>
+                </div>
+
+            </div>
+
+            <div>
+                <h3 class="font-bold mb-3">
+                    Stocks
+                </h3>
+
+                <div
+                    id="account3-stocks"
+                    class="grid grid-cols-2 md:grid-cols-3 gap-4"
+                ></div>
+            </div>
         </section>
 
-        <!-- ADD STOCKS -->
+        <!-- ADD STOCKS / TRADE -->
         <section
             id="view-add-stocks"
-            class="hidden"
+            class="hidden space-y-6"
         >
-            <h1 class="text-2xl font-light mb-4">
-                Add Stocks
-            </h1>
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-light">
+                    Trade
+                </h1>
+
+                <button
+                    onclick="switchTab('account' + tradeSlot)"
+                    class="bg-sand/20 px-4 py-2 rounded"
+                >
+                    Back to account
+                </button>
+            </div>
 
             <div class="grid md:grid-cols-2 gap-6">
 
-                <div
-                    class="bg-stone-200 p-6 rounded h-64 overflow-auto"
-                >
-                    <ul class="space-y-2">
-
-                        <li
-                            onclick="addStock('AAPL')"
-                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
-                        >
-                            + AAPL
-                        </li>
-
-                        <li
-                            onclick="addStock('MSFT')"
-                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
-                        >
-                            + MSFT
-                        </li>
-
-                        <li
-                            onclick="addStock('GOOGL')"
-                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
-                        >
-                            + GOOGL
-                        </li>
-
-                        <li
-                            onclick="addStock('AMZN')"
-                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
-                        >
-                            + AMZN
-                        </li>
-
-                        <li
-                            onclick="addStock('TSLA')"
-                            class="cursor-pointer hover:bg-stone-300 p-2 rounded"
-                        >
-                            + TSLA
-                        </li>
-
-                    </ul>
+                <div class="bg-sand/10 p-6 rounded h-96 overflow-auto">
+                    <ul id="trade-picker" class="space-y-2"></ul>
                 </div>
 
-                <div
-                    class="border-2 border-dashed border-stone-300 rounded flex justify-center items-center"
-                >
-                    Fake money only.
+                <div class="bg-sand/10 p-6 rounded space-y-4">
+
+                    <select
+                        id="trade-account"
+                        onchange="onTradeAccountChange()"
+                        class="w-full border border-sand/30 rounded p-3 bg-ink text-sand"
+                    >
+                        <option value="1">Account 1</option>
+                        <option value="2">Account 2</option>
+                        <option value="3">Account 3</option>
+                    </select>
+
+                    <input
+                        id="trade-symbol"
+                        type="text"
+                        placeholder="Symbol (pick one on the left)"
+                        oninput="onSymbolInput()"
+                        class="w-full border border-sand/30 rounded p-3 bg-black/20 text-sand placeholder-sand/50 uppercase"
+                    >
+
+                    <div class="flex space-x-2">
+                        <button
+                            id="side-buy"
+                            onclick="setSide('buy')"
+                            class="flex-1 px-4 py-2 rounded bg-sand text-ink"
+                        >
+                            Buy
+                        </button>
+
+                        <button
+                            id="side-sell"
+                            onclick="setSide('sell')"
+                            class="flex-1 px-4 py-2 rounded bg-sand/10 text-sand"
+                        >
+                            Sell
+                        </button>
+                    </div>
+
+                    <input
+                        id="trade-shares"
+                        type="number"
+                        min="1"
+                        step="1"
+                        placeholder="Shares"
+                        oninput="updateTicket()"
+                        class="w-full border border-sand/30 rounded p-3 bg-black/20 text-sand placeholder-sand/50"
+                    >
+
+                    <div class="text-sm space-y-1">
+                        <div class="flex justify-between">
+                            <span class="text-sand/70">Live price</span>
+                            <span id="trade-price">—</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span id="trade-estimate-label" class="text-sand/70">Estimated cost</span>
+                            <span id="trade-estimate">—</span>
+                        </div>
+
+                        <div id="trade-info" class="text-sand/70"></div>
+                    </div>
+
+                    <button
+                        id="trade-submit"
+                        onclick="submitTrade()"
+                        class="w-full bg-sand text-ink hover:bg-sand/80 px-4 py-2 rounded"
+                    >
+                        Place order
+                    </button>
+
+                    <div id="trade-message" class="text-sm min-h-[1.25rem]"></div>
+
+                    <div class="border-t border-sand/30 pt-4 space-y-3">
+                        <h3 class="font-bold">
+                            Cash
+                        </h3>
+
+                        <input
+                            id="trade-cash"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="Amount in dollars"
+                            class="w-full border border-sand/30 rounded p-3 bg-black/20 text-sand placeholder-sand/50"
+                        >
+
+                        <div class="flex space-x-2">
+                            <button
+                                onclick="submitCash('deposit')"
+                                class="flex-1 px-4 py-2 rounded bg-sand/20"
+                            >
+                                Add cash
+                            </button>
+
+                            <button
+                                onclick="submitCash('withdraw')"
+                                class="flex-1 px-4 py-2 rounded bg-sand/20"
+                            >
+                                Remove cash
+                            </button>
+                        </div>
+
+                        <div id="cash-message" class="text-sm min-h-[1.25rem]"></div>
+                    </div>
+
+                    <p class="text-xs text-sand/50">
+                        Fake money only. Orders fill at the live price when you place them.
+                    </p>
                 </div>
 
             </div>
@@ -295,6 +570,591 @@
             }
         }
 
+        let lastQuotes = {};
+        let accountsData = null;
+        let tradeSlot = 1;
+        let tradeSide = "buy";
+
+        function money(value) {
+            return Number(value).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD"
+            });
+        }
+
+        function signedMoney(value) {
+            const n = Number(value);
+
+            return (n >= 0 ? "+" : "-") + money(Math.abs(n));
+        }
+
+        function plClass(value) {
+            return Number(value) >= 0 ? "text-green-400" : "text-red-400";
+        }
+
+        function refreshAll() {
+            fetchStockData();
+            loadAccounts();
+        }
+
+        async function loadAccounts() {
+            try {
+                const response = await authFetch("/accounts");
+
+                if (!response.ok) {
+                    return;
+                }
+
+                const data = await readJson(response);
+
+                accountsData = data.accounts;
+
+                renderAccountSummaries();
+                updateTicket();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderAccountSummaries() {
+            [1, 2, 3].forEach(slot => {
+                const holdings = document.getElementById(`account${slot}-holdings`);
+                const balance = document.getElementById(`account${slot}-balance`);
+                const acct = accountsData && accountsData.find(a => a.slot === slot);
+
+                if (!acct) {
+                    holdings.innerText = "Loading...";
+                    balance.innerText = "Loading...";
+                    return;
+                }
+
+                holdings.innerHTML = acct.positions.length
+                    ? acct.positions.map(p => `
+                        <div class="flex justify-between text-sm py-1 border-b border-sand/20">
+                            <span>
+                                <b>${p.symbol}</b>
+                                &middot; ${p.shares} sh @ ${money(p.avg_cost)}
+                            </span>
+
+                            <span>
+                                ${money(p.market_value)}
+                                <span class="${plClass(p.unrealized_pl)}">
+                                    ${signedMoney(p.unrealized_pl)}
+                                    (${p.unrealized_pl_pct.toFixed(2)}%)
+                                </span>
+                            </span>
+                        </div>
+                    `).join("")
+                    : `<div class="text-sm text-sand/70">
+                           No holdings yet. Press Add to buy stocks.
+                       </div>`;
+
+                balance.innerHTML = `
+                    <div class="text-2xl font-light">${money(acct.total_value)}</div>
+
+                    <div class="flex justify-between">
+                        <span class="text-sand/70">Cash</span>
+                        <span>${money(acct.cash)}</span>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span class="text-sand/70">Invested</span>
+                        <span>${money(acct.positions_value)}</span>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span class="text-sand/70">Total P/L</span>
+                        <span class="${plClass(acct.total_pl)}">
+                            ${signedMoney(acct.total_pl)}
+                            (${acct.total_pl_pct.toFixed(2)}%)
+                        </span>
+                    </div>
+                `;
+            });
+        }
+
+        function openTrade(slot) {
+            tradeSlot = slot;
+
+            document.getElementById("trade-account").value = String(slot);
+            document.getElementById("trade-message").innerText = "";
+            document.getElementById("cash-message").innerText = "";
+
+            renderPicker();
+            updateTicket();
+            switchTab("add-stocks");
+        }
+
+        function onTradeAccountChange() {
+            tradeSlot = Number(document.getElementById("trade-account").value);
+            updateTicket();
+        }
+
+        function renderPicker() {
+            document.getElementById("trade-picker").innerHTML = symbols.map(symbol => {
+                const quote = lastQuotes[symbol];
+                const price = quote && quote.price != null
+                    ? money(quote.price)
+                    : "—";
+
+                return `
+                    <li
+                        onclick="pickSymbol('${symbol}')"
+                        class="cursor-pointer hover:bg-sand/20 p-2 rounded flex justify-between"
+                    >
+                        <span>+ ${symbol}</span>
+                        <span class="text-sand/70">${price}</span>
+                    </li>
+                `;
+            }).join("");
+        }
+
+        function pickSymbol(symbol) {
+            document.getElementById("trade-symbol").value = symbol;
+            updateTicket();
+        }
+
+        async function onSymbolInput() {
+            updateTicket();
+
+            const symbol = document
+                .getElementById("trade-symbol")
+                .value.trim().toUpperCase();
+
+            if (symbol.length < 1 || (lastQuotes[symbol] && lastQuotes[symbol].price)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API_URL}/quotes?symbols=${encodeURIComponent(symbol)}`
+                );
+
+                const data = await readJson(response);
+
+                if (response.ok && data[symbol]) {
+                    lastQuotes[symbol] = data[symbol];
+                    updateTicket();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function setSide(side) {
+            tradeSide = side;
+
+            document.getElementById("side-buy").className =
+                "flex-1 px-4 py-2 rounded " +
+                (side === "buy" ? "bg-sand text-ink" : "bg-sand/10 text-sand");
+
+            document.getElementById("side-sell").className =
+                "flex-1 px-4 py-2 rounded " +
+                (side === "sell" ? "bg-sand text-ink" : "bg-sand/10 text-sand");
+
+            updateTicket();
+        }
+
+        function updateTicket() {
+            const symbol = document
+                .getElementById("trade-symbol")
+                .value.trim().toUpperCase();
+
+            const quote = lastQuotes[symbol];
+            const price = quote && quote.price;
+            const shares = parseInt(
+                document.getElementById("trade-shares").value,
+                10
+            ) || 0;
+
+            const acct = accountsData &&
+                accountsData.find(a => a.slot === tradeSlot);
+
+            document.getElementById("trade-price").innerText =
+                price ? money(price) : "—";
+
+            document.getElementById("trade-estimate-label").innerText =
+                tradeSide === "buy" ? "Estimated cost" : "Estimated proceeds";
+
+            document.getElementById("trade-estimate").innerText =
+                price && shares > 0 ? money(price * shares) : "—";
+
+            const info = document.getElementById("trade-info");
+
+            if (!acct) {
+                info.innerText = "";
+            } else if (tradeSide === "buy") {
+                info.innerText = `Cash available: ${money(acct.cash)}`;
+            } else {
+                const held = acct.positions.find(p => p.symbol === symbol);
+
+                info.innerText = symbol
+                    ? `You hold ${held ? held.shares : 0} shares of ${symbol}`
+                    : "";
+            }
+        }
+
+        function showMessage(id, text, ok) {
+            const box = document.getElementById(id);
+
+            box.className = "text-sm min-h-[1.25rem] " +
+                (ok ? "text-green-400" : "text-red-400");
+            box.innerText = text;
+        }
+
+        async function submitTrade() {
+            const symbol = document
+                .getElementById("trade-symbol")
+                .value.trim().toUpperCase();
+
+            const shares = Number(document.getElementById("trade-shares").value);
+            const button = document.getElementById("trade-submit");
+
+            if (!symbol) {
+                showMessage("trade-message", "Pick or type a stock symbol.", false);
+                return;
+            }
+
+            if (!Number.isInteger(shares) || shares < 1) {
+                showMessage("trade-message", "Enter a whole number of shares (1 or more).", false);
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+                const response = await authFetch(
+                    `/accounts/${tradeSlot}/trade`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ symbol, side: tradeSide, shares })
+                    }
+                );
+
+                const data = await readJson(response);
+
+                if (!response.ok) {
+                    throw new Error(errorMessage(data, response));
+                }
+
+                let text = `${tradeSide === "buy" ? "Bought" : "Sold"} ` +
+                    `${data.shares} ${data.symbol} at ${money(data.price)} ` +
+                    `(${money(data.total)}).`;
+
+                if (data.realized_pl !== null) {
+                    text += ` Realized ${signedMoney(data.realized_pl)}.`;
+                }
+
+                showMessage("trade-message", text, true);
+
+                await loadAccounts();
+            } catch (err) {
+                showMessage("trade-message", err.message, false);
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function submitCash(action) {
+            const amount = Number(document.getElementById("trade-cash").value);
+
+            if (!(amount > 0)) {
+                showMessage("cash-message", "Enter an amount greater than 0.", false);
+                return;
+            }
+
+            try {
+                const response = await authFetch(
+                    `/accounts/${tradeSlot}/cash`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ action, amount })
+                    }
+                );
+
+                const data = await readJson(response);
+
+                if (!response.ok) {
+                    throw new Error(errorMessage(data, response));
+                }
+
+                showMessage(
+                    "cash-message",
+                    `${action === "deposit" ? "Added" : "Removed"} ${money(data.amount)}. ` +
+                    `Cash is now ${money(data.cash_after)}.`,
+                    true
+                );
+
+                document.getElementById("trade-cash").value = "";
+
+                await loadAccounts();
+            } catch (err) {
+                showMessage("cash-message", err.message, false);
+            }
+        }
+
+        const TOKEN_KEY = "trade_token";
+        let authToken = null;
+        let authMode = "login";
+        let quoteTimer = null;
+
+        try {
+            authToken = localStorage.getItem(TOKEN_KEY);
+        } catch {}
+
+        function saveToken(token) {
+            authToken = token;
+
+            try {
+                if (token) {
+                    localStorage.setItem(TOKEN_KEY, token);
+                } else {
+                    localStorage.removeItem(TOKEN_KEY);
+                }
+            } catch {}
+        }
+
+        function errorMessage(data, response) {
+            const detail = data && data.detail;
+
+            if (Array.isArray(detail)) {
+                return "Please fill in every field.";
+            }
+
+            return detail || `Request failed (HTTP ${response.status})`;
+        }
+
+        // Use for any call that needs a signed-in user
+        async function authFetch(path, options = {}) {
+            const headers = { ...(options.headers || {}) };
+
+            if (authToken) {
+                headers.Authorization = `Bearer ${authToken}`;
+            }
+
+            const response = await fetch(`${API_URL}${path}`, {
+                ...options,
+                headers
+            });
+
+            if (response.status === 401) {
+                showLogin("Your session expired. Please sign in again.");
+            }
+
+            return response;
+        }
+
+        function setSignedInUi(user) {
+            const signedIn = Boolean(user);
+
+            ["home", "ai", "accounts"].forEach(name => {
+                document
+                    .getElementById(`nav-${name}`)
+                    .classList.toggle("hidden", !signedIn);
+            });
+
+            document
+                .getElementById("user-bar")
+                .classList.toggle("hidden", !signedIn);
+
+            document.getElementById("user-name").innerText =
+                signedIn ? user.username : "";
+        }
+
+        function showLogin(message = "", clearToken = true) {
+            if (quoteTimer) {
+                clearInterval(quoteTimer);
+                quoteTimer = null;
+            }
+
+            if (clearToken) {
+                saveToken(null);
+            }
+
+            setSignedInUi(null);
+
+            accountsData = null;
+            renderAccountSummaries();
+
+            document.getElementById("login-error").innerText = message;
+
+            switchTab("login");
+        }
+
+        function startApp(user) {
+            setSignedInUi(user);
+            switchTab("home");
+
+            refreshAll();
+
+            if (!quoteTimer) {
+                quoteTimer = setInterval(refreshAll, 30000);
+            }
+        }
+
+        function toggleAuthMode() {
+            authMode = authMode === "login" ? "register" : "login";
+
+            const registering = authMode === "register";
+
+            document.getElementById("login-title").innerText =
+                registering ? "Create account" : "Sign in";
+            document.getElementById("login-submit").innerText =
+                registering ? "Create account" : "Sign in";
+            document.getElementById("login-toggle").innerText =
+                registering ? "I already have an account" : "Create an account";
+            document
+                .getElementById("login-code")
+                .classList.toggle("hidden", !registering);
+            document
+                .getElementById("login-password")
+                .setAttribute(
+                    "autocomplete",
+                    registering ? "new-password" : "current-password"
+                );
+            document.getElementById("login-error").innerText = "";
+        }
+
+        async function submitAuth() {
+            const username = document.getElementById("login-username").value.trim();
+            const password = document.getElementById("login-password").value;
+            const code = document.getElementById("login-code").value;
+            const errorBox = document.getElementById("login-error");
+            const button = document.getElementById("login-submit");
+
+            errorBox.innerText = "";
+
+            if (!username || !password) {
+                errorBox.innerText = "Enter a username and password.";
+                return;
+            }
+
+            const registering = authMode === "register";
+            const body = { username, password };
+
+            if (registering) {
+                body.code = code;
+            }
+
+            button.disabled = true;
+
+            try {
+                const response = await fetch(
+                    `${API_URL}/auth/${registering ? "register" : "login"}`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(body)
+                    }
+                );
+
+                const data = await readJson(response);
+
+                if (!response.ok) {
+                    throw new Error(errorMessage(data, response));
+                }
+
+                saveToken(data.token);
+
+                document.getElementById("login-password").value = "";
+                document.getElementById("login-code").value = "";
+
+                startApp(data.user);
+            } catch (err) {
+                errorBox.innerText = err.message;
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function signOut() {
+            try {
+                await fetch(`${API_URL}/auth/logout`, {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${authToken}` }
+                });
+            } catch {}
+
+            showLogin();
+        }
+
+        async function initAuth() {
+            if (!authToken) {
+                showLogin("", false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: { Authorization: `Bearer ${authToken}` }
+                });
+
+                if (!response.ok) {
+                    showLogin();
+                    return;
+                }
+
+                const data = await readJson(response);
+
+                startApp(data.user);
+            } catch (err) {
+                showLogin("Cannot reach the server. Try again.", false);
+            }
+        }
+
+        const NAV_ON = "px-3 py-1 bg-sand text-ink font-medium text-sm rounded";
+        const NAV_OFF = "px-3 py-1 bg-sand/10 text-sand font-medium text-sm rounded";
+
+        const ACCOUNT_STOCKS = {
+            account1: symbols,
+            account2: symbols,
+            account3: symbols
+        };
+
+        function renderAccounts(data) {
+            Object.entries(ACCOUNT_STOCKS).forEach(([account, list]) => {
+                const grid = document.getElementById(`${account}-stocks`);
+
+                if (!grid) {
+                    return;
+                }
+
+                grid.innerHTML = "";
+
+                list.forEach(symbol => {
+                    const info = data[symbol] || {};
+                    const hasData = info.price != null;
+                    const pct = Number(info.percent || 0);
+
+                    const color = pct >= 0
+                        ? "text-green-400"
+                        : "text-red-400";
+
+                    grid.innerHTML += `
+                        <div class="bg-sand/10 border border-sand/30 p-4 rounded h-32">
+                            <div class="text-xs uppercase text-sand/60">
+                                Live Quote
+                            </div>
+
+                            <div class="text-xl font-bold mt-1">
+                                ${symbol}
+                            </div>
+
+                            <div class="mt-2">
+                                ${hasData ? "$" + Number(info.price).toFixed(2) : "—"}
+                            </div>
+
+                            <div class="${color}">
+                                ${hasData ? pct.toFixed(2) + "%" : "—"}
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
         function switchTab(tabId) {
             const views = [
                 "home",
@@ -303,7 +1163,8 @@
                 "account1",
                 "account2",
                 "account3",
-                "add-stocks"
+                "add-stocks",
+                "login"
             ];
 
             views.forEach(view => {
@@ -315,6 +1176,17 @@
             document
                 .getElementById(`view-${tabId}`)
                 ?.classList.remove("hidden");
+
+            if (tabId === "login") {
+                return;
+            }
+
+            const group = tabId === "home" || tabId === "ai" ? tabId : "accounts";
+
+            ["home", "ai", "accounts"].forEach(name => {
+                document.getElementById(`nav-${name}`).className =
+                    name === group ? NAV_ON : NAV_OFF;
+            });
         }
 
         async function fetchStockData() {
@@ -331,8 +1203,13 @@
                     throw new Error(data.detail || `HTTP ${response.status}`);
                 }
 
+                Object.assign(lastQuotes, data);
+
                 renderHome(data);
                 renderAi(data);
+                renderAccounts(data);
+                renderPicker();
+                updateTicket();
             } catch (err) {
                 console.error(err);
                 grid.innerHTML = `<p>Unable to load quotes: ${err.message}</p>`;
@@ -344,18 +1221,18 @@
 
             grid.innerHTML = "";
 
-            symbols.slice(0, 6).forEach(symbol => {
+            symbols.forEach(symbol => {
                 const info = data[symbol] || {};
                 const hasData = info.price != null;
                 const pct = Number(info.percent || 0);
 
                 const color = pct >= 0
-                    ? "text-green-700"
-                    : "text-red-700";
+                    ? "text-green-400"
+                    : "text-red-400";
 
                 grid.innerHTML += `
-                    <div class="bg-stone-200 border border-stone-300 p-4 rounded h-40">
-                        <div class="text-xs uppercase text-stone-500">
+                    <div class="bg-sand/10 border border-sand/30 p-4 rounded h-40">
+                        <div class="text-xs uppercase text-sand/60">
                             Live Quote
                         </div>
 
@@ -386,11 +1263,11 @@
                 const pct = Number(info.percent || 0);
 
                 const color = pct >= 0
-                    ? "text-green-700"
-                    : "text-red-700";
+                    ? "text-green-400"
+                    : "text-red-400";
 
                 grid.innerHTML += `
-                    <div class="bg-stone-200 border border-stone-300 p-3 rounded">
+                    <div class="bg-sand/10 border border-sand/30 p-3 rounded">
                         <div class="flex justify-between">
                             <span>${symbol}</span>
 
@@ -438,17 +1315,16 @@
             }
         }
 
-        function addStock(symbol) {
-            alert(`${symbol} added`);
-        }
-
         window.onload = () => {
-            fetchStockData();
+            ["login-username", "login-password", "login-code"].forEach(id => {
+                document.getElementById(id).addEventListener("keydown", e => {
+                    if (e.key === "Enter") {
+                        submitAuth();
+                    }
+                });
+            });
 
-            setInterval(
-                fetchStockData,
-                30000
-            );
+            initAuth();
         };
     </script>
 

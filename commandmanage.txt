@@ -1,0 +1,12 @@
+git
+git add .
+git commit -m "updated"
+git push
+
+git pull origin main
+
+docker build -t waffle12/stock-trader-frontend:latest .
+docker push waffle12/stock-trader-frontend:latest
+
+docker build -t waffle12/stock-trader-backend:latest .
+docker push waffle12/stock-trader-backend:latest
