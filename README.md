@@ -1,6 +1,8 @@
 This is stock ai hope you like it
-Here is how to get started
 
+Here is how to get started:
+
+```yaml
 services:
   backend:
     image: waffle12/stock-trader-backend:latest
@@ -30,3 +32,4 @@ services:
 networks:
   trader:
     external: true
+```
